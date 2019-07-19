@@ -2,7 +2,7 @@ use std::io::{Result, Error, ErrorKind};
 use std::convert::TryFrom;
 
 mod safe;
-pub use safe::Decoder;
+pub use safe::{Decoder, decode};
 
 /// Read the next byte of the UTF-8 character out of the given byte iterator.
 /// The byte is returned as a `u32` for later shifting.
@@ -58,12 +58,14 @@ fn decode_from<I: Iterator<Item=Result<u8>>>(a: u32, iter: &mut I) -> Result<cha
     }
 }
 
-/// Read the next Unicode character out of the given byte iterator.
+/// Read the next Unicode character out of the given [`Result<u8>`](Iterator) iterator.
+///
 /// Returns `None` is the input iterator directly outputs `None`.
-/// Returns an `InvalidData` error the input iterator does not output a valid UTF-8 sequence.
-/// Returns an `UnexpectedEof` error if the input iterator returns `None` before the end of an
-/// UTF-8 character.
-pub fn decode<I: Iterator<Item=Result<u8>>>(iter: &mut I) -> Option<Result<char>> {
+/// Returns an [`InvalidData`](std::io::ErrorKind::InvalidData) error the input iterator does not
+/// output a valid UTF-8 sequence.
+/// Returns an [`UnexpectedEof`](std::io::ErrorKind::UnexpectedEof) error if the input iterator
+/// returns `None` before the end of an UTF-8 character.
+pub fn decode_unsafe<I: Iterator<Item=Result<u8>>>(iter: &mut I) -> Option<Result<char>> {
 	match iter.next() {
 		Some(Ok(a)) => Some(decode_from(a as u32, iter)),
 		Some(Err(e)) => Some(Err(e)),
@@ -71,11 +73,28 @@ pub fn decode<I: Iterator<Item=Result<u8>>>(iter: &mut I) -> Option<Result<char>
 	}
 }
 
-/// UTF-8 decoder for unsafe input.
-/// Transform the given `std::io::Result<u8>` iterator into a `std::io::Result<char>` iterator.
-/// Since the UTF-8 sequence may be invalid, each character is wrapped around a `std::io::Result`.
-/// A call to `Iterator::next` returns an [`InvalidData`](std::io::ErrorKind::InvalidData) error
-/// if the input iterator does not output a valid UTF-8 sequence, or an
+/// UTF-8 decoder iterator for unsafe input.
+///
+/// Transform the given [`io::Result<u8>`](std::io::Result) iterator into a [`io::Result<char>`](std::io::Result) iterator.
+/// This iterator can be useful to decode from an [`io::Read`](std::io::Read) source, but if your input
+/// iterator iterates directly over `u8`, then use the [`Decoder`](crate::Decoder) iterator instead.
+///
+/// ## Example
+/// The `UnsafeDecoder` iterator can be used, for instance, to decode UTF-8 encoded files.
+/// ```[rust]
+/// let file = File::open("file.txt")?;
+///
+/// let decoder = UnsafeDecoder::new(file.bytes());
+///
+/// let mut string = String::new();
+/// for c in decoder {
+///     string.push(c?);
+/// }
+/// ```
+///
+/// ## Errors
+/// A call to [`next`](Iterator::next) returns an [`InvalidData`](std::io::ErrorKind::InvalidData)
+/// error if the input iterator does not output a valid UTF-8 sequence, or an
 /// [`UnexpectedEof`](std::io::ErrorKind::UnexpectedEof) if the stream ends before the end of a
 /// valid character.
 pub struct UnsafeDecoder<R: Iterator<Item=Result<u8>>> {
@@ -83,6 +102,8 @@ pub struct UnsafeDecoder<R: Iterator<Item=Result<u8>>> {
 }
 
 impl<R: Iterator<Item=Result<u8>>> UnsafeDecoder<R> {
+    /// Creates a new `Decoder` iterator from the given [`Result<u8>`](std::io::Result) source
+    /// iterator.
 	pub fn new(source: R) -> UnsafeDecoder<R> {
 		UnsafeDecoder {
 			bytes: source
@@ -94,6 +115,6 @@ impl<R: Iterator<Item=Result<u8>>> Iterator for UnsafeDecoder<R> {
 	type Item = Result<char>;
 
 	fn next(&mut self) -> Option<Result<char>> {
-		decode(&mut self.bytes)
+		decode_unsafe(&mut self.bytes)
 	}
 }

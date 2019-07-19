@@ -54,11 +54,13 @@ fn decode_from<I: Iterator<Item=u8>>(a: u32, iter: &mut I) -> Result<char> {
     }
 }
 
-/// Read the next Unicode character out of the given byte iterator.
+/// Read the next Unicode character out of the given [`u8`](u8) iterator.
+///
 /// Returns `None` is the input iterator directly outputs `None`.
-/// Returns an `InvalidData` error the input iterator does not output a valid UTF-8 sequence.
-/// Returns an `UnexpectedEof` error if the input iterator returns `None` before the end of an
-/// UTF-8 character.
+/// Returns an [`InvalidData`](std::io::ErrorKind::InvalidData) error the input iterator does not
+/// output a valid UTF-8 sequence.
+/// Returns an [`UnexpectedEof`](std::io::ErrorKind::UnexpectedEof) error if the input iterator
+/// returns `None` before the end of an UTF-8 character.
 pub fn decode<I: Iterator<Item=u8>>(iter: &mut I) -> Option<Result<char>> {
 	match iter.next() {
 		Some(a) => Some(decode_from(a as u32, iter)),
@@ -66,11 +68,31 @@ pub fn decode<I: Iterator<Item=u8>>(iter: &mut I) -> Option<Result<char>> {
 	}
 }
 
-/// UTF-8 decoder.
-/// Transform the given bytes iterator into a `std::io::Result<char>` iterator.
-/// Since the UTF-8 sequence may be invalid, each character is wrapped around a `std::io::Result`.
-/// A call to `Iterator::next` returns an [`InvalidData`](std::io::ErrorKind::InvalidData) error
-/// if the input iterator does not output a valid UTF-8 sequence, or an
+/// UTF-8 decoder iterator.
+///
+/// Transform the given [`u8`](u8) iterator into a [`io::Result<char>`](std::io::Result) iterator.
+/// This iterator cannot be used to decode an [`io::Read`](std::io::Read) source, since the input
+/// iterator would be over [`io::Result<u8>`](std::io::Result) and not `u8`. However in this case
+/// you can use the [`UnsafeDecoder`](crate::UnsafeDecoder) iterator.
+///
+/// ## Example
+/// The `Decoder` iterator can be used, for instance, to decode `u8` slices.
+/// ```[rust]
+/// let bytes = [72, 101, 108, 108, 111, 32, 87, 111, 114, 108, 100, 33];
+///
+/// let decoder = Decoder::new(bytes.iter().cloned());
+///
+/// let mut string = String::new();
+/// for c in decoder {
+///     string.push(c?);
+/// }
+///
+/// println!("{}", string);
+/// ```
+///
+/// ## Errors
+/// A call to [`next`](Iterator::next) returns an [`InvalidData`](std::io::ErrorKind::InvalidData)
+/// error if the input iterator does not output a valid UTF-8 sequence, or an
 /// [`UnexpectedEof`](std::io::ErrorKind::UnexpectedEof) if the stream ends before the end of a
 /// valid character.
 pub struct Decoder<R: Iterator<Item=u8>> {
@@ -78,6 +100,7 @@ pub struct Decoder<R: Iterator<Item=u8>> {
 }
 
 impl<R: Iterator<Item=u8>> Decoder<R> {
+    /// Creates a new `Decoder` iterator from the given `u8` source iterator.
 	pub fn new(source: R) -> Decoder<R> {
 		Decoder {
 			bytes: source
