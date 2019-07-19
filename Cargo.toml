@@ -6,6 +6,7 @@ edition = "2018"
 categories = ["parsing"]
 keywords = ["utf8", "decode", "iterator"]
 description = "UTF-8 incremental decoding iterators."
+repository = "https://github.com/timothee-haudebourg/utf8-decode"
 license = "MIT/Apache-2.0"
 
 [dependencies]
