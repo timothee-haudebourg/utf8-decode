@@ -1,0 +1,11 @@
+[package]
+name = "utf8-decode"
+version = "0.1.0"
+authors = ["Timothée Haudebourg <author@haudebourg.net>"]
+edition = "2018"
+categories = ["parsing"]
+keywords = ["utf8", "decode", "iterator"]
+description = "UTF-8 incremental decoding iterators."
+license = "MIT/Apache-2.0"
+
+[dependencies]
