@@ -1,3 +1,60 @@
+//! This crates provides incremental UTF-8 decoders implementing the [`Iterator`](std::iter::Iterator) trait.
+//! Thoses iterators are wrappers around [`u8`] bytes iterators.
+//!
+//! ## Decoder
+//!
+//! The [`Decoder`](safe::Decoder) struct wraps [`u8`] iterators.
+//! You can use it, for instance, to decode `u8` slices.
+//!
+//! ```rust
+//! extern crate utf8_decode;
+//!
+//! use utf8_decode::Decoder;
+//!
+//! fn main() -> std::io::Result<()> {
+//!     let bytes = [72, 101, 108, 108, 111, 32, 87, 111, 114, 108, 100, 33, 32, 240, 159, 140, 141];
+//!
+//!     let decoder = Decoder::new(bytes.iter().cloned());
+//!
+//!     let mut string = String::new();
+//!     for c in decoder {
+//!         string.push(c?);
+//!     }
+//!
+//!     println!("{}", string);
+//!
+//!     Ok(())
+//! }
+//! ```
+//!
+//! ## UnsafeDecoder
+//!
+//! The [`UnsafeDecoder`] wraps [`std::io::Result<u8>`](std::io::Result) iterators.
+//! You can use it, for instance, to decode UTF-8 encoded files.
+//!
+//! ```rust
+//! extern crate utf8_decode;
+//!
+//! use std::fs::File;
+//! use std::io::Read;
+//! use utf8_decode::UnsafeDecoder;
+//!
+//! fn main() -> std::io::Result<()> {
+//!     let file = File::open("examples/file.txt")?;
+//!
+//!     let decoder = UnsafeDecoder::new(file.bytes());
+//!
+//!     let mut string = String::new();
+//!     for c in decoder {
+//!         string.push(c?);
+//!     }
+//!
+//!     println!("{}", string);
+//!
+//!     Ok(())
+//! }
+//! ```
+
 use std::io::{Result, Error, ErrorKind};
 use std::convert::TryFrom;
 
