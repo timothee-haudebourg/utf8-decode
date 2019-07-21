@@ -81,7 +81,7 @@ pub fn decode_unsafe<I: Iterator<Item=Result<u8>>>(iter: &mut I) -> Option<Resul
 ///
 /// ## Example
 /// The `UnsafeDecoder` iterator can be used, for instance, to decode UTF-8 encoded files.
-/// ```[rust]
+/// ```rust
 /// let file = File::open("file.txt")?;
 ///
 /// let decoder = UnsafeDecoder::new(file.bytes());

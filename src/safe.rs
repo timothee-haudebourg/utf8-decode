@@ -77,7 +77,7 @@ pub fn decode<I: Iterator<Item=u8>>(iter: &mut I) -> Option<Result<char>> {
 ///
 /// ## Example
 /// The `Decoder` iterator can be used, for instance, to decode `u8` slices.
-/// ```[rust]
+/// ```rust
 /// let bytes = [72, 101, 108, 108, 111, 32, 87, 111, 114, 108, 100, 33];
 ///
 /// let decoder = Decoder::new(bytes.iter().cloned());

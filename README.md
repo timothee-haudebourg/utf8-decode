@@ -8,7 +8,7 @@ Thoses iterators are wrappers around `u8` bytes iterators.
 The `Decoder` struct wraps `Iterator<Item = u8>` iterators.
 You can use it, for instance, to decode `u8` slices.
 
-```[rust]
+```rust
 extern crate utf8_decode;
 
 use utf8_decode::Decoder;
@@ -34,7 +34,7 @@ fn main() -> std::io::Result<()> {
 The `UnsafeDecoder` wraps `Iterator<Item = std::io::Result<u8>>` iterators.
 You can use it, for instance, to decode UTF-8 encoded files.
 
-```[rust]
+```rust
 extern crate utf8_decode;
 
 use std::fs::File;
