@@ -1,9 +1,9 @@
 # UTF-8 decode
 
 <table><tr>
-  <td>[Documentation](https://docs.rs/utf8-decode)</td>
-  <td>[Crate informations](https://crates.io/crates/utf8-decode)</td>
-  <td>[Github](https://github.com/timothee-haudebourg/utf8-decode)</td>
+  <td><a href="https://docs.rs/utf8-decode">Documentation</a></td>
+  <td><a href="https://crates.io/crates/utf8-decode">Crate informations</a></td>
+  <td><a href="https://github.com/timothee-haudebourg/utf8-decode">Github</a></td>
 </tr></table>
 
 This crates provides incremental UTF-8 decoders implementing the `Iterator` trait.
