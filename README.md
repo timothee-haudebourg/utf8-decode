@@ -1,5 +1,11 @@
 # UTF-8 decode
 
+<table><tr>
+  <td>[Documentation](`https://docs.rs/utf8-decode`)</td>
+  <td>[Crate informations](`https://crates.io/crates/utf8-decode`)</td>
+  <td>[Github](`https://github.com/timothee-haudebourg/utf8-decode`)</td>
+</tr></table>
+
 This crates provides incremental UTF-8 decoders implementing the `Iterator` trait.
 Thoses iterators are wrappers around `u8` bytes iterators.
 
