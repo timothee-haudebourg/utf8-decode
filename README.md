@@ -1,67 +1,60 @@
 # UTF-8 decode
 
-<table><tr>
-  <td><a href="https://docs.rs/utf8-decode">Documentation</a></td>
-  <td><a href="https://crates.io/crates/utf8-decode">Crate informations</a></td>
-  <td><a href="https://github.com/timothee-haudebourg/utf8-decode">Github</a></td>
-</tr></table>
+[![CI](https://github.com/timothee-haudebourg/utf8-decode/workflows/CI/badge.svg)](https://github.com/timothee-haudebourg/utf8-decode/actions)
+[![Crate informations](https://img.shields.io/crates/v/utf8-decode.svg?style=flat-square)](https://crates.io/crates/utf8-decode)
+[![License](https://img.shields.io/crates/l/utf8-decode.svg?style=flat-square)](https://github.com/timothee-haudebourg/utf8-decode#license)
+[![Documentation](https://img.shields.io/badge/docs-latest-blue.svg?style=flat-square)](https://docs.rs/utf8-decode)
 
-This crates provides incremental UTF-8 decoders implementing the `Iterator` trait.
-Thoses iterators are wrappers around `u8` bytes iterators.
+<!-- cargo-rdme start -->
 
-## Decoder
+This crates provides incremental UTF-8 decoders implementing the
+[`Iterator`] trait, wrapping around [`u8`] bytes iterators.
 
-The `Decoder` struct wraps `Iterator<Item = u8>` iterators.
-You can use it, for instance, to decode `u8` slices.
+It also provide the `const`-compatible [`try_decode_char`] to decode UTF-8
+byte streams, even in `const` contexts.
+
+[`u8`]: std::primitive::u8
+[`Iterator`]: std::iter::Iterator
+[`try_decode_char`]: https://docs.rs/utf8-decode/latest/utf8_decode/fn.try_decode_char.html
+
+### `Decoder`
+
+The [`Decoder`] iterator can be used, for instance, to decode `u8` slices.
 
 ```rust
-extern crate utf8_decode;
-
 use utf8_decode::Decoder;
+let bytes = [72, 101, 108, 108, 111, 32, 87, 111, 114, 108, 100, 33];
 
-fn main() -> std::io::Result<()> {
-    let bytes = [72, 101, 108, 108, 111, 32, 87, 111, 114, 108, 100, 33, 32, 240, 159, 140, 141];
+let decoder = Decoder::new(bytes.iter().cloned());
 
-    let decoder = Decoder::new(bytes.iter().cloned());
-
-    let mut string = String::new();
-    for c in decoder {
-        string.push(c?);
-    }
-
-    println!("{}", string);
-
-    Ok(())
+let mut string = String::new();
+for c in decoder {
+    string.push(c?);
 }
+
+println!("{}", string);
 ```
 
-## UnsafeDecoder
+### `TryDecoder`
 
-The `UnsafeDecoder` wraps `Iterator<Item = std::io::Result<u8>>` iterators.
-You can use it, for instance, to decode UTF-8 encoded files.
+The [`TryDecoder`] iterator can be used, for instance, to decode UTF-8
+encoded files.
 
 ```rust
-extern crate utf8_decode;
+use utf8_decode::TryDecoder;
+let file = File::open("examples/file.txt")?;
 
-use std::fs::File;
-use std::io::Read;
-use utf8_decode::UnsafeDecoder;
+let decoder = TryDecoder::new(file.bytes());
 
-fn main() -> std::io::Result<()> {
-    let file = File::open("examples/file.txt")?;
-
-    let decoder = UnsafeDecoder::new(file.bytes());
-
-    let mut string = String::new();
-    for c in decoder {
-        string.push(c?);
-    }
-
-    println!("{}", string);
-
-    Ok(())
+let mut string = String::new();
+for c in decoder {
+    string.push(c?);
 }
 ```
+
+[`TryDecoder`]: https://docs.rs/utf8-decode/latest/utf8_decode/fallible/struct.TryDecoder.html
+
+<!-- cargo-rdme end -->
 
 ## License
 

@@ -1,7 +1,12 @@
-//! This crates provides incremental UTF-8 decoders implementing the [`Iterator`] trait.
-//! Thoses iterators are wrappers around [`u8`] bytes iterators.
+//! This crates provides incremental UTF-8 decoders implementing the
+//! [`Iterator`] trait, wrapping around [`u8`] bytes iterators.
 //!
+//! It also provide the `const`-compatible [`try_decode_char`] to decode UTF-8
+//! byte streams, even in `const` contexts.
+//!
+//! [`u8`]: std::primitive::u8
 //! [`Iterator`]: std::iter::Iterator
+//! [`try_decode_char`]: crate::try_decode_char
 //!
 //! ## `Decoder`
 //!
@@ -44,6 +49,8 @@
 //! # Ok(())
 //! # }
 //! ```
+//!
+//! [`TryDecoder`]: crate::fallible::TryDecoder
 #![cfg_attr(not(feature = "std"), no_std)]
 use core::fmt::{self, Debug, Display, Formatter};
 
