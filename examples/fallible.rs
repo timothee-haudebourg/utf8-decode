@@ -1,13 +1,10 @@
-extern crate utf8_decode;
-
-use std::fs::File;
-use std::io::Read;
-use utf8_decode::UnsafeDecoder;
+use std::{fs::File, io::Read};
+use utf8_decode::TryDecoder;
 
 fn main() -> std::io::Result<()> {
     let file = File::open("examples/file.txt")?;
 
-    let decoder = UnsafeDecoder::new(file.bytes());
+    let decoder = TryDecoder::new(file.bytes());
 
     let mut string = String::new();
     for c in decoder {
