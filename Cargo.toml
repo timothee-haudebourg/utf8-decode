@@ -1,14 +1,15 @@
 [package]
 name = "utf8-decode"
-version = "1.0.1"
 authors = ["Timothée Haudebourg <author@haudebourg.net>"]
-edition = "2024"
 categories = ["parsing"]
 keywords = ["utf8", "decode", "iterator"]
 description = "UTF-8 incremental decoding iterators."
 repository = "https://github.com/timothee-haudebourg/utf8-decode"
 documentation = "https://docs.rs/utf8-decode"
 license = "MIT/Apache-2.0"
+edition = "2024"
+rust-version = "1.85.1"
+version = "2.0.0"
 
 [features]
 default = ["std"]
